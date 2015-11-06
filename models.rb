@@ -18,7 +18,7 @@ class User < Sequel::Model
     self.password_hash = @password
   end
 
-  def self.authenticate!
+  def authenticate!(password)
     puts "authenticate"
     true
   end

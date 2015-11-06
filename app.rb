@@ -10,16 +10,23 @@ end
 
 Warden::Strategies.add(:password) do
   def valid?
-    params['email'] && params['password']
+    puts "params: #{params['email']}, #{params['password']}"
+    params['username'] && params['password']
   end
 
   def authenticate!
-    u = User.authenticate!(params['email'], params['password'])
-    u.nil? ? fail!('Could not log in') : success!(u)
+    user = User.first(name: params['username'])
+
+    if user.nil?
+      puts "user nil"
+      throw(:warden, message: "The username you entered does not exist.")
+    elsif user.authenticate!(['password'])
+      success!(user)
+    else
+      throw(:warden, message: "The username and password combination ")
+    end
   end
 end
-
-class PSSApp < Sinatra::Base
 
 use Warden::Manager do |config|
   config.serialize_into_session(&:id)
@@ -27,23 +34,18 @@ use Warden::Manager do |config|
   config.scope_defaults :default,
                         strategies: [:password],
                         action: '/unauthenticated'
-  config.failure_app = self
+  config.failure_app = Sinatra::Application
 end
 
 get '/' do
   env['warden'].authenticate!
-  # Album.db.fetch('SELECT 1+1;') do |row|
-  #   puts row
-  # end
 end
 
 post '/unauthenticated/?' do
-  status 401
-  haml :login
+  redirect '/login'
 end
 
 get '/login/?' do
-  puts "Login!"
   haml :login
 end
 
@@ -57,4 +59,7 @@ get '/logout/?' do
   redirect '/'
 end
 
-end
+#u = User.new
+#u.name='test'
+#u.password='qwerty'
+#u.save
