@@ -1,0 +1,10 @@
+source 'https://rubygems.org'
+
+gem 'sinatra'
+gem 'sequel'
+# gem 'thin'
+gem 'sqlite3'
+gem 'rerun'
+gem 'warden'
+gem 'bcrypt'
+gem 'haml'
