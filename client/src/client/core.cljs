@@ -4,16 +4,39 @@
 
 (enable-console-print!)
 
-(println "Edits to this text should show up in your developer console.")
-
 ;; define your app data so that it doesn't get over-written on reload
 
-(defonce app-state (atom {:text "Hello world!"}))
+(defn sample-words [words]
+  (into {} (for [word words] [word {:word word}])))
+
+(defonce categories
+  {1 {:name ""
+      :words (sample-words ["lolka" "lalka" "rorka"])}
+   2 {:name "zazez"
+      :words (sample-words ["zazka" "glinka" "rorka"])}})
+
+(defonce app-state (atom {:categories categories}))
 
 (defn hello-world []
   [:h1 (:text @app-state)])
 
-(reagent/render-component [hello-world]
+(defn word [word]
+  (println @word)
+  [:span.word {:style {:padding "10px"}} (:word @word)])
+
+(defn category [category]
+  [:div.category {:style {:border "1px solid #f00"}}
+   (println "words" @category)
+   (for [word-id (-> @category :words keys)]
+     (word (reagent/cursor category [:words word-id])))])
+
+(defn editor [categories]
+  [:div.editor
+   (for [cat-id (keys categories)] (category (reagent/cursor categories cat-id)))])
+
+(defn app [] (editor categories))
+
+(reagent/render-component [app]
                           (. js/document (getElementById "app")))
 
 
@@ -22,4 +45,3 @@
   ;; your application
   ;; (swap! app-state update-in [:__figwheel_counter] inc)
 )
-
