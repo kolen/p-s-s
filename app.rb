@@ -1,4 +1,5 @@
 require 'sinatra'
+require 'sinatra/flash'
 require 'warden'
 require_relative 'models'
 
@@ -10,20 +11,16 @@ end
 
 Warden::Strategies.add(:password) do
   def valid?
-    puts "params: #{params['email']}, #{params['password']}"
     params['username'] && params['password']
   end
 
   def authenticate!
     user = User.first(name: params['username'])
 
-    if user.nil?
-      puts "user nil"
-      throw(:warden, message: "The username you entered does not exist.")
-    elsif user.authenticate!(['password'])
+    if !user.nil? && user.authenticate!(params['password'])
       success!(user)
     else
-      throw(:warden, message: "The username and password combination ")
+      throw(:warden, message: 'Invalid login/password combination')
     end
   end
 end
@@ -42,6 +39,8 @@ get '/' do
 end
 
 post '/unauthenticated/?' do
+  session[:return_to] ||= env['warden.options'][:attempted_path]
+  flash[:error] = env['warden.options'][:message] || 'You must log in'
   redirect '/login'
 end
 
@@ -51,15 +50,12 @@ end
 
 post '/login/?' do
   env['warden'].authenticate!
-  redirect '/'
+  flash[:success] = env['warden'].message
+  redirect session[:return_to]
 end
 
 get '/logout/?' do
+  flash[:success] = 'Successfully logged out'
   env['warden'].logout
   redirect '/'
 end
-
-#u = User.new
-#u.name='test'
-#u.password='qwerty'
-#u.save

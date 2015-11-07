@@ -1,4 +1,8 @@
 %html
   %body
+    %div
+      =flash[:success]
+    %div
+      =flash[:error]
     Test
     =yield

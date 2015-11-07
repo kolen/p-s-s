@@ -19,8 +19,8 @@ class User < Sequel::Model
   end
 
   def authenticate!(password)
-    puts "authenticate"
-    true
+    puts "Hash: #{password_hash}"
+    self.password == password
   end
 end
 

@@ -1,6 +1,7 @@
 source 'https://rubygems.org'
 
 gem 'sinatra'
+gem 'sinatra-flash'
 gem 'sequel'
 # gem 'thin'
 gem 'sqlite3'
