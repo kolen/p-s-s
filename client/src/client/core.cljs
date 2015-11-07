@@ -1,6 +1,6 @@
 (ns ^:figwheel-always client.core
     (:require
-              [reagent.core :as reagent :refer [atom]]))
+              [reagent.core :as r :refer [atom]]))
 
 (enable-console-print!)
 
@@ -21,23 +21,35 @@
   [:h1 (:text @app-state)])
 
 (defn word [word]
-  (println @word)
-  [:span.word {:style {:padding "10px"}} (:word @word)])
+  [:span.word {:style {:padding "10px"}} (:word word)])
 
-(defn category [category]
+(defn add-word [category-id word]
+  (swap! app-state assoc-in [:categories category-id :words word] {:word word}))
+
+(defn word-input []
+  (let [val (r/atom "")]
+    (fn [category category-id]
+      [:input {:type :text
+               :on-change #(reset! val (-> % .-target .-value))
+               :on-key-down (fn [key] (case (.-which key)
+                                        13 (add-word category-id @val)
+                                        nil))}])))
+
+(defn category [category category-id]
   [:div.category {:style {:border "1px solid #f00"}}
-   (println "words" @category)
-   (for [word-id (-> @category :words keys)]
-     (word (reagent/cursor category [:words word-id])))])
+   category-id
+   (for [[w-id w] (category :words)]
+     ^{:key w} [word w])
+   [word-input category category-id]])
 
 (defn editor [categories]
   [:div.editor
-   (for [cat-id (keys categories)] (category (reagent/cursor categories cat-id)))])
+   (for [[c-id c] categories] ^{:key c-id} [category c c-id])])
 
-(defn app [] (editor categories))
+(defn app [] [editor (@app-state :categories)])
 
-(reagent/render-component [app]
-                          (. js/document (getElementById "app")))
+(r/render-component [app]
+                    (. js/document (getElementById "app")))
 
 
 (defn on-js-reload []
