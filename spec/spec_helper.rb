@@ -13,7 +13,7 @@ require_relative '../app.rb'
 module RSpecMixin
   include Rack::Test::Methods
   def app
-    Sinatra::Application
+    Webapp
   end
 end
 
@@ -23,9 +23,6 @@ RSpec.configure do |c|
   c.include RSpecMixin
   c.include Rack::Test::Methods
   c.include FactoryGirl::Syntax::Methods
-
-  c.before(:each) do
-  end
 
   c.before(:suite) do
     DatabaseCleaner.strategy = :transaction

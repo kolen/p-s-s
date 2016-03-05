@@ -9,7 +9,7 @@ gem 'rerun'
 gem 'warden'
 gem 'bcrypt'
 gem 'haml'
-gem 'pry'
+gem 'grape'
 
 group :test, :development do
   gem 'pry'
