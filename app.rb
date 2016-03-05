@@ -36,6 +36,8 @@ end
 
 get '/' do
   env['warden'].authenticate!
+
+  haml :index
 end
 
 post '/unauthenticated/?' do

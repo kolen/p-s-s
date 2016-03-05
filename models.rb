@@ -2,9 +2,13 @@ require 'sequel'
 require 'bcrypt'
 require_relative 'config'
 
-# rubocop:disable Style/Documentation
-
 Sequel::Model.db = Sequel.connect(settings.database, encoding: 'utf-8')
+
+if settings.run_migrations
+  Sequel.extension :migration
+  Sequel::Migrator.run(Sequel::Model.db,
+                       File.expand_path('../migrations', __FILE__))
+end
 
 class User < Sequel::Model
   include BCrypt
@@ -19,7 +23,6 @@ class User < Sequel::Model
   end
 
   def authenticate!(password)
-    puts "Hash: #{password_hash}"
     self.password == password
   end
 end
@@ -32,6 +35,17 @@ class Round < Sequel::Model
   many_to_one :user, key: :words_by
   many_to_one :user, key: :story_by
   one_to_many :words
+
+  def validate
+    super
+    if words.count != words_count
+      errors.add(:words, 'must contain #{words_count} words')
+    end
+  end
+
+  def words_count
+    5
+  end
 end
 
 class Word < Sequel::Model

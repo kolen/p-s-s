@@ -1,4 +1,3 @@
-#require 'sinatra/sequel'
 require 'sqlite3'
 
 configure :development do
@@ -9,4 +8,6 @@ end
 configure :test do
   set :session_secret, 'testtest'
   set :database, 'sqlite::memory:'
+
+  set :run_migrations, true
 end
