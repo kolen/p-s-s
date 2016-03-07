@@ -3,6 +3,9 @@ require 'bcrypt'
 require_relative 'config'
 
 Sequel::Model.db = Sequel.connect(settings.database, encoding: 'utf-8')
+Sequel::Model.db.loggers << Logger.new($stderr)
+Sequel::Model.raise_on_save_failure = true
+Sequel::Model.plugin :json_serializer
 
 if settings.run_migrations
   Sequel.extension :migration
@@ -12,6 +15,7 @@ end
 
 class User < Sequel::Model
   include BCrypt
+  one_to_many :categories
 
   def password
     @password ||= Password.new(password_hash)
@@ -56,4 +60,8 @@ end
 class Category < Sequel::Model
   many_to_one :user
   one_to_many :words
+
+  def to_json(*_)
+    super(include: :words)
+  end
 end
