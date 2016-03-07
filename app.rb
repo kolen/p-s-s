@@ -3,38 +3,8 @@ require 'sinatra/flash'
 require 'warden'
 require_relative 'models'
 
-Warden::Manager.before_failure do |env, _opts|
-  env['REQUEST_METHOD'] = 'POST'
-end
-
-Warden::Strategies.add(:password) do
-  def valid?
-    params['username'] && params['password']
-  end
-
-  def authenticate!
-    user = User.first(name: params['username'])
-
-    if !user.nil? && user.authenticate!(params['password'])
-      success!(user)
-    else
-      throw(:warden, message: 'Invalid login/password combination')
-    end
-  end
-end
-
 class Webapp < Sinatra::Base
   register Sinatra::Flash
-  enable :sessions
-
-  use Warden::Manager do |config|
-    config.serialize_into_session(&:id)
-    config.serialize_from_session { |id| User.get(id) }
-    config.scope_defaults :default,
-                          strategies: [:password],
-                          action: '/unauthenticated'
-    config.failure_app = Webapp
-  end
 
   get '/' do
     env['warden'].authenticate!

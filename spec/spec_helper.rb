@@ -8,12 +8,12 @@ require_relative './factories.rb'
 
 ENV['RACK_ENV'] = 'test'
 
-require_relative '../app.rb'
+OUTER_APP = Rack::Builder.parse_file('config.ru').first
 
 module RSpecMixin
   include Rack::Test::Methods
   def app
-    Webapp
+    OUTER_APP
   end
 end
 
