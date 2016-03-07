@@ -1,5 +1,6 @@
 require 'sequel'
 require 'bcrypt'
+require 'logger'
 require_relative 'config'
 
 Sequel::Model.db = Sequel.connect(settings.database, encoding: 'utf-8')

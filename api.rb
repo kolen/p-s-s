@@ -26,7 +26,7 @@ class API < Grape::API
 
     desc 'Create category'
     params do
-      optional :name, type: String
+      optional :name, type: String, default: ''
     end
     post do
       current_user.add_category name: params[:name]
@@ -39,7 +39,7 @@ class API < Grape::API
 
       desc 'Set category name'
       params do
-        optional :name, type: String
+        optional :name, type: String, default: ''
       end
       put do
         current_category.name = params[:name]
@@ -69,7 +69,8 @@ class API < Grape::API
         requires :category_id, type: Integer
       end
       put do
-        word = Word.where(user: current_user, id: params[:word_id])
+        word = current_user.categories_dataset.association_join(:words)[id: word_id]
+        error! 'word is already used', 400 if word.round
         word.category_id = current_user.categories[:category_id]
         word.word = params[:word]
         word.save_changes

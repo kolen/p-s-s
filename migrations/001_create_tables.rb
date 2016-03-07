@@ -35,7 +35,7 @@ Sequel.migration do
     create_table(:categories) do
       primary_key :id
       foreign_key :user_id, :users, null: false
-      String :name, null: true
+      String :name, null: false
     end
   end
 end
