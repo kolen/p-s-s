@@ -14,4 +14,5 @@
 
 (defonce app-state (atom {:categories categories
                           :words words
-                          :insertion nil}))
+                          :insertion nil
+                          :drag {:dragged-word nil}}))

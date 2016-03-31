@@ -21,13 +21,20 @@
   (act/call :drag-start word-id))
 
 (defn word-drag-end [word-id e]
-  (act/call :drag-end word-id))
+  (act/call :drag-end))
 
-(defn word [word word-id]
+(defn word-drop [category-id e]
+  (act/call :drag-end)
+  (word-drag-leave category-id)
+  (act/call :update :words
+            (get-in @app-state [:drag :dragged-word])
+            :category-id category-id))
+
+(defn word [word word-id dragged?]
   [:div.word {:draggable true
               :on-drag-start (partial word-drag-start word-id)
               :on-drag-end (partial word-drag-end word-id)
-              :class (if (:dragged word) "dragged" "")}
+              :class (if dragged? "dragged" "")}
    (:word word)])
 
 (defn word-input []
@@ -47,22 +54,22 @@
     [:div.insertion.insertion-word]
     nil))
 
-(defn category [category category-id words]
+(defn category [category category-id words dragged-word]
   [:div.category {:on-drag-enter (partial word-drag-enter category-id)
                   :on-drag-leave (partial word-drag-leave category-id)
                   :on-drag-over  #(.preventDefault %)
-                  :on-drop       #(print "drop" %)}
+                  :on-drop       (partial word-drop category-id)}
    [:div.name (category :name)]
 
    (for [[w-id w] words :when (= category-id (w :category-id))]
-     ^{:key w-id} [word w w-id])
+     ^{:key w-id} [word w w-id (= w-id dragged-word)])
    [insertion-point (category :insertion)]
    [word-input category category-id]])
 
 (defn editor [app-state]
   [:div.editor
    (for [[c-id c] (app-state :categories)]
-     ^{:key c-id} [category c c-id (app-state :words)])])
+     ^{:key c-id} [category c c-id (app-state :words) (->> app-state :drag :dragged-word)])])
 
 (defn app [] [editor @app-state])
 
