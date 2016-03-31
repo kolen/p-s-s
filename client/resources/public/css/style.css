@@ -1,2 +1,57 @@
-/* some style */
+body {
+  font-family: 'Ubuntu Condensed', sans-serif;
+  font-weight: 300;
+  background: #666;
+}
 
+.category {
+  background: #ddd;
+  padding: 3px;
+  margin: 20px;
+  width: 250px;
+  border-radius: 4px;
+  box-shadow: 0 3px 1px 0 rgba(0,0,0,0.2);
+}
+
+.category .word {
+  padding: 4px 4px 4px 20px;
+  background: #eee;
+  margin: 3px;
+  height: 20px;
+  font-size: 16px;
+  color: #444;
+  border-radius: 2px;
+  border-top-left-radius: 9px;
+  box-shadow: 0.5px 1px 1px 0px rgba(0,0,0,0.13);
+}
+
+.category .word.dragged {
+  opacity: 0.3;
+}
+
+.category .name {
+  font-size: 13px;
+  padding-left: 10px;
+  height: 20px;
+  line-height: 20px;
+  color: #555;
+}
+
+.category input {
+  width: 236px;
+  padding: 4px;
+  margin: 3px;
+  font-family: 'Ubuntu condensed', sans-serif;
+  font-size: 16px;
+  border: 0;
+  box-shadow: inset 0px 2px 2px 0px rgba(0,0,0,0.2);
+}
+
+.insertion.insertion-word {
+  height: 20px;
+  margin: 3px;
+  padding: 4px;
+  border-radius: 2px;
+  border-top-left-radius: 9px;
+  border: 1px dashed #fff;
+}
